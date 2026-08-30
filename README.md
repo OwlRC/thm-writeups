@@ -3,15 +3,15 @@
 │  OwlRC // TryHackMe Writeups                 by OwlRC 🦉   │
 │  Last updated: 2026-08-30 03:58 UTC                        │
 ├─────────────────────────────────────────────────────────────┤
-│  Completed : 11    🟢 Easy: 9    🟡 Medium: 1    🔴 Hard: 1    │
+│  Completed : 12    🟢 Easy: 10   🟡 Medium: 1    🔴 Hard: 1    │
 │  THM Total : 800 rooms (live count from TryHackMe)           │
 ├─────────────────────────────────────────────────────────────┤
-│  Progress  : ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  1.4%  (11/800) │
+│  Progress  : ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  1.5%  (12/800) │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 [![TryHackMe](https://img.shields.io/badge/TryHackMe-OwlRC-red?style=flat-square&logo=tryhackme&logoColor=white)](https://tryhackme.com/p/OwlRC)
-![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-11-39d353?style=flat-square)
+![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-12-39d353?style=flat-square)
 ![THM Total](https://img.shields.io/badge/THM_Total_Rooms-800-58a6ff?style=flat-square)
 ![Auto Updated](https://img.shields.io/badge/Auto_Updated-Daily-c9a84c?style=flat-square)
 
@@ -32,13 +32,14 @@ Every writeup follows this structure:
 
 ---
 
-## 🟢 Easy  —  9 writeups
+## 🟢 Easy  —  10 writeups
 
 | Room | Room | Room |
 |---|---|---|
 | [Ad Authenticated Enumeration](easy/ad-authenticated-enumeration.md) | [Ad Basic Enumeration](easy/ad-basic-enumeration.md) | [Agent T](easy/agent-t.md) |
 | [Basic Pentesting](easy/basic-pentesting.md) | [Checkmate](easy/checkmate.md) | [Compiled](easy/compiled.md) |
 | [Confidential](easy/confidential.md) | [Corridor](easy/corridor.md) | [Digdug](easy/digdug.md) |
+| [Nmap The Basics](easy/nmap-the-basics.md) |
 
 
 ---
