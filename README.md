@@ -1,17 +1,17 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  OwlRC // TryHackMe Writeups                 by OwlRC 🦉   │
-│  Last updated: 2026-08-30 04:11 UTC                        │
+│  Last updated: 2026-08-30 04:12 UTC                        │
 ├─────────────────────────────────────────────────────────────┤
-│  Completed : 38    🟢 Easy: 20   🟡 Medium: 15   🔴 Hard: 2    │
+│  Completed : 44    🟢 Easy: 20   🟡 Medium: 15   🔴 Hard: 2    │
 │  THM Total : 800 rooms (live count from TryHackMe)           │
 ├─────────────────────────────────────────────────────────────┤
-│  Progress  : █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  4.8%  (38/800) │
+│  Progress  : █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  5.5%  (44/800) │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 [![TryHackMe](https://img.shields.io/badge/TryHackMe-OwlRC-red?style=flat-square&logo=tryhackme&logoColor=white)](https://tryhackme.com/p/OwlRC)
-![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-38-39d353?style=flat-square)
+![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-44-39d353?style=flat-square)
 ![THM Total](https://img.shields.io/badge/THM_Total_Rooms-800-58a6ff?style=flat-square)
 ![Auto Updated](https://img.shields.io/badge/Auto_Updated-Daily-c9a84c?style=flat-square)
 
@@ -69,11 +69,13 @@ Every writeup follows this structure:
 
 ---
 
-## ℹ️ Info / CTF Events  —  1 writeups
+## ℹ️ Info / CTF Events  —  7 writeups
 
 | Room | Room | Room |
 |---|---|---|
-| [Ctf Events](info/ctf-events.md) |
+| [Ctf Events](info/ctf-events.md) | [Hfb1 Evilgptv2](info/hfb1-evilgptv2.md) | [Hfb1 Hideandseek](info/hfb1-hideandseek.md) |
+| [Hfb1 Order](info/hfb1-order.md) | [Hfb1 Thegame](info/hfb1-thegame.md) | [Hh Concierge](info/hh-concierge.md) |
+| [Hh Room404](info/hh-room404.md) |
 
 
 ---
