@@ -1,17 +1,17 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  OwlRC // TryHackMe Writeups                 by OwlRC 🦉   │
-│  Last updated: 2026-08-30 04:07 UTC                        │
+│  Last updated: 2026-08-30 04:11 UTC                        │
 ├─────────────────────────────────────────────────────────────┤
-│  Completed : 33    🟢 Easy: 20   🟡 Medium: 10   🔴 Hard: 2    │
+│  Completed : 38    🟢 Easy: 20   🟡 Medium: 15   🔴 Hard: 2    │
 │  THM Total : 800 rooms (live count from TryHackMe)           │
 ├─────────────────────────────────────────────────────────────┤
-│  Progress  : █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  4.1%  (33/800) │
+│  Progress  : █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  4.8%  (38/800) │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 [![TryHackMe](https://img.shields.io/badge/TryHackMe-OwlRC-red?style=flat-square&logo=tryhackme&logoColor=white)](https://tryhackme.com/p/OwlRC)
-![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-33-39d353?style=flat-square)
+![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-38-39d353?style=flat-square)
 ![THM Total](https://img.shields.io/badge/THM_Total_Rooms-800-58a6ff?style=flat-square)
 ![Auto Updated](https://img.shields.io/badge/Auto_Updated-Daily-c9a84c?style=flat-square)
 
@@ -47,14 +47,15 @@ Every writeup follows this structure:
 
 ---
 
-## 🟡 Medium  —  10 writeups
+## 🟡 Medium  —  15 writeups
 
 | Room | Room | Room |
 |---|---|---|
-| [Ad Badsuccessor](medium/ad-badsuccessor.md) | [Ai Rooms](medium/ai-rooms.md) | [Hammer](medium/hammer.md) |
-| [Lateral Movement Pivoting](medium/lateral-movement-pivoting.md) | [Lookback](medium/lookback.md) | [Mr Robot](medium/mr-robot.md) |
-| [Osint Rooms](medium/osint-rooms.md) | [Support](medium/support.md) | [Unindexed Challenge](medium/unindexed-challenge.md) |
-| [Water Bottle](medium/water-bottle.md) |
+| [Ad Badsuccessor](medium/ad-badsuccessor.md) | [Ai Rooms](medium/ai-rooms.md) | [Bankgpt](medium/bankgpt.md) |
+| [Hammer](medium/hammer.md) | [Healthgpt](medium/healthgpt.md) | [Lateral Movement Pivoting](medium/lateral-movement-pivoting.md) |
+| [Llmborghini](medium/llmborghini.md) | [Lookback](medium/lookback.md) | [Missingperson](medium/missingperson.md) |
+| [Mr Robot](medium/mr-robot.md) | [Oracle9](medium/oracle9.md) | [Osint Rooms](medium/osint-rooms.md) |
+| [Support](medium/support.md) | [Unindexed Challenge](medium/unindexed-challenge.md) | [Water Bottle](medium/water-bottle.md) |
 
 
 ---
