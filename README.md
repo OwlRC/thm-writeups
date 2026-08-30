@@ -3,15 +3,15 @@
 │  OwlRC // TryHackMe Writeups                 by OwlRC 🦉   │
 │  Last updated: 2026-08-30 04:00 UTC                        │
 ├─────────────────────────────────────────────────────────────┤
-│  Completed : 18    🟢 Easy: 14   🟡 Medium: 2    🔴 Hard: 2    │
+│  Completed : 19    🟢 Easy: 14   🟡 Medium: 3    🔴 Hard: 2    │
 │  THM Total : 800 rooms (live count from TryHackMe)           │
 ├─────────────────────────────────────────────────────────────┤
-│  Progress  : ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  2.2%  (18/800) │
+│  Progress  : ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  2.4%  (19/800) │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 [![TryHackMe](https://img.shields.io/badge/TryHackMe-OwlRC-red?style=flat-square&logo=tryhackme&logoColor=white)](https://tryhackme.com/p/OwlRC)
-![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-18-39d353?style=flat-square)
+![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-19-39d353?style=flat-square)
 ![THM Total](https://img.shields.io/badge/THM_Total_Rooms-800-58a6ff?style=flat-square)
 ![Auto Updated](https://img.shields.io/badge/Auto_Updated-Daily-c9a84c?style=flat-square)
 
@@ -45,11 +45,11 @@ Every writeup follows this structure:
 
 ---
 
-## 🟡 Medium  —  2 writeups
+## 🟡 Medium  —  3 writeups
 
 | Room | Room | Room |
 |---|---|---|
-| [Ad Badsuccessor](medium/ad-badsuccessor.md) | [Support](medium/support.md) |
+| [Ad Badsuccessor](medium/ad-badsuccessor.md) | [Support](medium/support.md) | [Unindexed Challenge](medium/unindexed-challenge.md) |
 
 
 ---
