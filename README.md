@@ -1,17 +1,17 @@
 ```
-┌──────────────────────────────────────────────────────────────┐
-│  OwlRC // TryHackMe Writeups                 by OwlRC 🦉     │
-│  Last updated: 2026-08-30 04:03 UTC                          │
-├──────────────────────────────────────────────────────────────┤
-│  Completed : 32    🟢 Easy: 20   🟡 Medium: 10   🔴 Hard: 2 │
+┌─────────────────────────────────────────────────────────────┐
+│  OwlRC // TryHackMe Writeups                 by OwlRC 🦉   │
+│  Last updated: 2026-08-30 04:07 UTC                        │
+├─────────────────────────────────────────────────────────────┤
+│  Completed : 33    🟢 Easy: 20   🟡 Medium: 10   🔴 Hard: 2    │
 │  THM Total : 800 rooms (live count from TryHackMe)           │
-├──────────────────────────────────────────────────────────────┤
-│  Progress  : █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  4.0%  (32/800)  │
-└──────────────────────────────────────────────────────────── ─┘
+├─────────────────────────────────────────────────────────────┤
+│  Progress  : █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  4.1%  (33/800) │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 [![TryHackMe](https://img.shields.io/badge/TryHackMe-OwlRC-red?style=flat-square&logo=tryhackme&logoColor=white)](https://tryhackme.com/p/OwlRC)
-![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-32-39d353?style=flat-square)
+![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-33-39d353?style=flat-square)
 ![THM Total](https://img.shields.io/badge/THM_Total_Rooms-800-58a6ff?style=flat-square)
 ![Auto Updated](https://img.shields.io/badge/Auto_Updated-Daily-c9a84c?style=flat-square)
 
@@ -68,9 +68,11 @@ Every writeup follows this structure:
 
 ---
 
-## ℹ️ Info / CTF Events  —  0 writeups
+## ℹ️ Info / CTF Events  —  1 writeups
 
-_No writeups yet_
+| Room | Room | Room |
+|---|---|---|
+| [Ctf Events](info/ctf-events.md) |
 
 
 ---
