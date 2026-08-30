@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 from datetime import datetime, timezone
 from pathlib import Path
@@ -11,6 +12,54 @@ CATEGORIES = {
     "medium": {"label": "Medium", "icon": "🟡"},
     "hard":   {"label": "Hard",   "icon": "🔴"},
     "info":   {"label": "Info",   "icon": "ℹ️"},
+}
+
+# Badge colors per tool
+TOOL_COLORS = {
+    "nmap":           "0E83CD",
+    "burp suite":     "FF6633",
+    "metasploit":     "2596CD",
+    "hashcat":        "121011",
+    "bloodhound":     "FF0000",
+    "wireshark":      "1679A7",
+    "kali linux":     "557C94",
+    "kali":           "557C94",
+    "gobuster":       "00ADD8",
+    "ffuf":           "F5A623",
+    "hydra":          "2E86AB",
+    "john":           "8B0000",
+    "sqlmap":         "CC2927",
+    "nikto":          "6A0572",
+    "netcat":         "444444",
+    "nc":             "444444",
+    "evil-winrm":     "5C2D91",
+    "impacket":       "003366",
+    "crackmapexec":   "1A1A2E",
+    "powerview":      "0078D4",
+    "mimikatz":       "B22222",
+    "linpeas":        "FF4500",
+    "winpeas":        "FF6347",
+    "dirsearch":      "20B2AA",
+    "git-dumper":     "F05032",
+    "ghidra":         "009A44",
+    "strings":        "708090",
+    "exiftool":       "6B8E23",
+    "sherlock":       "483D8B",
+    "curl":           "073551",
+    "python":         "3776AB",
+    "bash":           "121011",
+    "ssh":            "2E8B57",
+    "nessus":         "00B388",
+    "openvas":        "558B2F",
+    "aircrack-ng":    "E65100",
+    "jwt_tool":       "7B1FA2",
+    "feroxbuster":    "FF5722",
+    "wpscan":         "21759B",
+    "ldapsearch":     "0052CC",
+    "kerbrute":       "C62828",
+    "rubeus":         "AD1457",
+    "msfvenom":       "37474F",
+    "stealthon":      "39d353",
 }
 
 def get_thm_total_rooms():
@@ -28,18 +77,48 @@ def get_thm_total_rooms():
             pass
     return 800
 
+def extract_tools_from_file(filepath):
+    try:
+        content = filepath.read_text(encoding="utf-8", errors="ignore")
+        # Match the Tools row in the markdown table
+        match = re.search(r'\|\s*\*\*Tools\*\*\s*\|\s*([^|\n]+)', content)
+        if match:
+            tools_raw = match.group(1).strip()
+            # Split by comma, pipe, or bullet
+            tools = re.split(r'[,·|•\n]+', tools_raw)
+            cleaned = []
+            for t in tools:
+                t = t.strip().strip('*').strip()
+                # Remove markdown links
+                t = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', t)
+                if t and len(t) > 1:
+                    cleaned.append(t)
+            return cleaned
+    except Exception:
+        pass
+    return []
+
 def count_writeups():
-    counts, rooms = {}, {}
+    counts, rooms, all_tools = {}, {}, set()
     for cat in CATEGORIES:
         folder = REPO_ROOT / cat
         if folder.exists():
             files = sorted([f for f in folder.glob("*.md") if f.name != "README.md"])
             counts[cat] = len(files)
             rooms[cat] = [f.stem.replace("-", " ").title() for f in files]
+            for f in files:
+                for tool in extract_tools_from_file(f):
+                    all_tools.add(tool.lower().strip())
         else:
             counts[cat] = 0
             rooms[cat] = []
-    return counts, rooms
+    return counts, rooms, all_tools
+
+def make_tool_badge(tool):
+    color = TOOL_COLORS.get(tool.lower(), "555555")
+    label = tool.replace("-", "_").replace(" ", "_")
+    display = tool.replace(" ", "%20").replace("-", "--")
+    return f"![{tool}](https://img.shields.io/badge/{display}-{color}?style=flat-square)"
 
 def room_table(room_list, cat):
     if not room_list:
@@ -53,14 +132,20 @@ def room_table(room_list, cat):
         rows.append("| " + " | ".join(cells) + " |")
     return "| Room | Room | Room |\n|---|---|---|\n" + "\n".join(rows) + "\n"
 
-def build_readme(counts, rooms, thm_total):
+def build_readme(counts, rooms, thm_total, all_tools):
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     total = sum(counts.values())
     pct = round(total / thm_total * 100, 1) if thm_total else 0
-
-    # Simple clean progress bar — no box drawing, no emoji widths
     filled = int((total / thm_total) * 50) if thm_total else 0
     bar = "█" * filled + "░" * (50 - filled)
+
+    # Build tool badges — sorted alphabetically, skip very generic ones
+    skip = {"browser", "n/a", "browser devtools", "terminal", "linux", "windows"}
+    tool_badges = []
+    for tool in sorted(all_tools):
+        if tool not in skip and len(tool) > 1:
+            tool_badges.append(make_tool_badge(tool))
+    tools_section = "\n".join(tool_badges) if tool_badges else "_(tools auto-detected from writeups)_"
 
     readme = f"""<div align="center">
 
@@ -121,15 +206,9 @@ Recon → Enumeration → Exploitation → Post-Exploitation → Lessons Learned
 
 ---
 
-## 🛠️ Tools
+## 🛠️ Tools — auto-detected from writeups
 
-![Kali](https://img.shields.io/badge/Kali_Linux-557C94?style=flat-square&logo=kali-linux&logoColor=white)
-![Nmap](https://img.shields.io/badge/nmap-0E83CD?style=flat-square)
-![Burp Suite](https://img.shields.io/badge/Burp_Suite-FF6633?style=flat-square)
-![Metasploit](https://img.shields.io/badge/Metasploit-2596CD?style=flat-square)
-![Hashcat](https://img.shields.io/badge/Hashcat-121011?style=flat-square)
-![BloodHound](https://img.shields.io/badge/BloodHound-FF0000?style=flat-square)
-![Wireshark](https://img.shields.io/badge/Wireshark-1679A7?style=flat-square)
+{tools_section}
 
 ---
 
@@ -143,14 +222,15 @@ Recon → Enumeration → Exploitation → Post-Exploitation → Lessons Learned
     return readme
 
 def main():
-    print("[*] Counting writeups...")
-    counts, rooms = count_writeups()
+    print("[*] Counting writeups and scanning tools...")
+    counts, rooms, all_tools = count_writeups()
     print(f"    easy={counts['easy']} medium={counts['medium']} hard={counts['hard']} info={counts['info']}")
+    print(f"    Tools found: {sorted(all_tools)}")
     print("[*] Fetching THM total...")
     thm_total = get_thm_total_rooms()
     print(f"    THM total: {thm_total}")
     print("[*] Generating README...")
-    readme = build_readme(counts, rooms, thm_total)
+    readme = build_readme(counts, rooms, thm_total, all_tools)
     (REPO_ROOT / "README.md").write_text(readme, encoding="utf-8")
     print("[+] Done")
 
