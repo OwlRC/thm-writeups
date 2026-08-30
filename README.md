@@ -1,19 +1,101 @@
+import os
+import requests
+from datetime import datetime, timezone
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).parent.parent
+THM_USERNAME = "OwlRC"
+
+CATEGORIES = {
+    "easy":   {"label": "Easy",   "icon": "🟢"},
+    "medium": {"label": "Medium", "icon": "🟡"},
+    "hard":   {"label": "Hard",   "icon": "🔴"},
+    "info":   {"label": "Info",   "icon": "ℹ️"},
+}
+
+def get_thm_total_rooms():
+    try:
+        r = requests.get(
+            "https://tryhackme.com/api/v2/search?kind=room&difficulty=all&limit=1",
+            timeout=10, headers={"User-Agent": "OwlRC/readme-bot"}
+        )
+        if r.status_code == 200:
+            total = r.json().get("data", {}).get("total")
+            if total: return int(total)
+    except Exception:
+        pass
+    try:
+        r = requests.get(
+            "https://tryhackme.com/api/hacktivities?type=room&difficulty=all&page=1&limit=1",
+            timeout=10, headers={"User-Agent": "OwlRC/readme-bot"}
+        )
+        if r.status_code == 200:
+            total = r.json().get("total")
+            if total: return int(total)
+    except Exception:
+        pass
+    return 800
+
+def count_writeups():
+    counts = {}
+    rooms = {}
+    for cat in CATEGORIES:
+        folder = REPO_ROOT / cat
+        if folder.exists():
+            files = sorted([f for f in folder.glob("*.md") if f.name != "README.md"])
+            counts[cat] = len(files)
+            rooms[cat] = [f.stem.replace("-", " ").title() for f in files]
+        else:
+            counts[cat] = 0
+            rooms[cat] = []
+    return counts, rooms
+
+def make_progress_bar(done, total, width=40):
+    if total == 0:
+        return "░" * width
+    pct = min(done / total, 1.0)
+    filled = int(pct * width)
+    return "█" * filled + "░" * (width - filled)
+
+def room_table(room_list, cat):
+    if not room_list:
+        return "_No writeups yet_\n"
+    rows = []
+    for i in range(0, len(room_list), 3):
+        chunk = room_list[i:i+3]
+        cells = [f"[{r}]({cat}/{r.lower().replace(' ', '-')}.md)" for r in chunk]
+        while len(cells) < 3:
+            cells.append("")
+        rows.append(f"| {' | '.join(cells)} |")
+    return "| Room | Room | Room |\n|---|---|---|\n" + "\n".join(rows) + "\n"
+
+def build_readme(counts, rooms, thm_total):
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    total_done = sum(counts.values())
+    pct = (total_done / thm_total * 100) if thm_total > 0 else 0
+    bar = make_progress_bar(total_done, thm_total)
+
+    readme = f"""<div align="center">
+
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  OwlRC // TryHackMe Writeups                 by OwlRC 🦉   │
-│  Last updated: 2026-08-30 04:12 UTC                        │
-├─────────────────────────────────────────────────────────────┤
-│  Completed : 44    🟢 Easy: 20   🟡 Medium: 15   🔴 Hard: 2    │
-│  THM Total : 800 rooms (live count from TryHackMe)           │
-├─────────────────────────────────────────────────────────────┤
-│  Progress  : █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  5.5%  (44/800) │
-└─────────────────────────────────────────────────────────────┘
+  ╔══════════════════════════════════════════════════════════╗
+  ║         OwlRC // TryHackMe Writeups          🦉          ║
+  ║  Updated : {now:<46}║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  Completed : {total_done:<3}   🟢 {counts['easy']:<3}  🟡 {counts['medium']:<3}  🔴 {counts['hard']:<3}  ℹ️  {counts['info']:<3}       ║
+  ║  THM Total : {thm_total:<3} rooms tracked live from TryHackMe       ║
+  ╠══════════════════════════════════════════════════════════╣
+  ║  {bar}  ║
+  ║  Progress  : {pct:.1f}% ({total_done}/{thm_total}){'':>34}║
+  ╚══════════════════════════════════════════════════════════╝
 ```
 
-[![TryHackMe](https://img.shields.io/badge/TryHackMe-OwlRC-red?style=flat-square&logo=tryhackme&logoColor=white)](https://tryhackme.com/p/OwlRC)
-![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-44-39d353?style=flat-square)
-![THM Total](https://img.shields.io/badge/THM_Total_Rooms-800-58a6ff?style=flat-square)
+[![TryHackMe](https://img.shields.io/badge/TryHackMe-{THM_USERNAME}-red?style=flat-square&logo=tryhackme&logoColor=white)](https://tryhackme.com/p/{THM_USERNAME})
+![Completed](https://img.shields.io/badge/Rooms_Completed-{total_done}-39d353?style=flat-square)
+![THM Total](https://img.shields.io/badge/THM_Total_Rooms-{thm_total}-58a6ff?style=flat-square)
 ![Auto Updated](https://img.shields.io/badge/Auto_Updated-Daily-c9a84c?style=flat-square)
+
+</div>
 
 ---
 
@@ -32,55 +114,31 @@ Every writeup follows this structure:
 
 ---
 
-## 🟢 Easy  —  20 writeups
+## 🟢 Easy — {counts['easy']} writeups
 
-| Room | Room | Room |
-|---|---|---|
-| [Ad Authenticated Enumeration](easy/ad-authenticated-enumeration.md) | [Ad Basic Enumeration](easy/ad-basic-enumeration.md) | [Agent T](easy/agent-t.md) |
-| [Basic Pentesting](easy/basic-pentesting.md) | [Checkmate](easy/checkmate.md) | [Compiled](easy/compiled.md) |
-| [Confidential](easy/confidential.md) | [Corridor](easy/corridor.md) | [Cyberheroes](easy/cyberheroes.md) |
-| [Digdug](easy/digdug.md) | [Lofi](easy/lofi.md) | [Md2Pdf](easy/md2pdf.md) |
-| [Neighbour](easy/neighbour.md) | [Netsec Challenge](easy/netsec-challenge.md) | [Nmap Intermediate](easy/nmap-intermediate.md) |
-| [Nmap The Basics](easy/nmap-the-basics.md) | [Pickle Rick](easy/pickle-rick.md) | [Takeover](easy/takeover.md) |
-| [Vulnerability Capstone](easy/vulnerability-capstone.md) | [W1Seguy](easy/w1seguy.md) |
-
+{room_table(rooms['easy'], 'easy')}
 
 ---
 
-## 🟡 Medium  —  15 writeups
+## 🟡 Medium — {counts['medium']} writeups
 
-| Room | Room | Room |
-|---|---|---|
-| [Ad Badsuccessor](medium/ad-badsuccessor.md) | [Ai Rooms](medium/ai-rooms.md) | [Bankgpt](medium/bankgpt.md) |
-| [Hammer](medium/hammer.md) | [Healthgpt](medium/healthgpt.md) | [Lateral Movement Pivoting](medium/lateral-movement-pivoting.md) |
-| [Llmborghini](medium/llmborghini.md) | [Lookback](medium/lookback.md) | [Missingperson](medium/missingperson.md) |
-| [Mr Robot](medium/mr-robot.md) | [Oracle9](medium/oracle9.md) | [Osint Rooms](medium/osint-rooms.md) |
-| [Support](medium/support.md) | [Unindexed Challenge](medium/unindexed-challenge.md) | [Water Bottle](medium/water-bottle.md) |
-
+{room_table(rooms['medium'], 'medium')}
 
 ---
 
-## 🔴 Hard  —  2 writeups
+## 🔴 Hard — {counts['hard']} writeups
 
-| Room | Room | Room |
-|---|---|---|
-| [Checkpoint](hard/checkpoint.md) | [Recruit Web Challenge](hard/recruit-web-challenge.md) |
-
+{room_table(rooms['hard'], 'hard')}
 
 ---
 
-## ℹ️ Info / CTF Events  —  7 writeups
+## ℹ️ Info / CTF Events — {counts['info']} writeups
 
-| Room | Room | Room |
-|---|---|---|
-| [Ctf Events](info/ctf-events.md) | [Hfb1 Evilgptv2](info/hfb1-evilgptv2.md) | [Hfb1 Hideandseek](info/hfb1-hideandseek.md) |
-| [Hfb1 Order](info/hfb1-order.md) | [Hfb1 Thegame](info/hfb1-thegame.md) | [Hh Concierge](info/hh-concierge.md) |
-| [Hh Room404](info/hh-room404.md) |
-
+{room_table(rooms['info'], 'info')}
 
 ---
 
-## 🛠️ Tools
+## 🛠️ Tools Used
 
 ![Kali Linux](https://img.shields.io/badge/Kali_Linux-557C94?style=flat-square&logo=kali-linux&logoColor=white)
 ![Nmap](https://img.shields.io/badge/nmap-0E83CD?style=flat-square)
@@ -92,12 +150,29 @@ Every writeup follows this structure:
 
 ---
 
-> ⚠️ All writeups are based on TryHackMe lab environments — authorized, legal practice.
+> ⚠️ All writeups are based on TryHackMe lab environments — authorized, legal practice only.
 > Never use these techniques on systems you do not own or have written permission to test.
 
 ---
 
-_🤖 This README is auto-generated daily by a GitHub Action — no manual updates needed._
-_Add a writeup → push → README updates itself._
+_🤖 README auto-generated daily — add a writeup, push, README updates itself._
 
-**by OwlRC 🦉 · github.com/OwlRC**
+**by OwlRC 🦉 · [github.com/OwlRC](https://github.com/OwlRC)**
+"""
+    return readme
+
+def main():
+    print("[*] Counting writeups...")
+    counts, rooms = count_writeups()
+    print(f"    easy={counts['easy']} medium={counts['medium']} hard={counts['hard']} info={counts['info']}")
+    print("[*] Fetching THM total room count...")
+    thm_total = get_thm_total_rooms()
+    print(f"    THM total: {thm_total}")
+    print("[*] Generating README...")
+    readme = build_readme(counts, rooms, thm_total)
+    readme_path = REPO_ROOT / "README.md"
+    readme_path.write_text(readme, encoding="utf-8")
+    print(f"[+] Done → {readme_path}")
+
+if __name__ == "__main__":
+    main()
