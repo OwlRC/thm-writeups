@@ -3,15 +3,15 @@
 │  OwlRC // TryHackMe Writeups                 by OwlRC 🦉   │
 │  Last updated: 2026-08-30 04:00 UTC                        │
 ├─────────────────────────────────────────────────────────────┤
-│  Completed : 17    🟢 Easy: 13   🟡 Medium: 2    🔴 Hard: 2    │
+│  Completed : 18    🟢 Easy: 14   🟡 Medium: 2    🔴 Hard: 2    │
 │  THM Total : 800 rooms (live count from TryHackMe)           │
 ├─────────────────────────────────────────────────────────────┤
-│  Progress  : ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  2.1%  (17/800) │
+│  Progress  : ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  2.2%  (18/800) │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 [![TryHackMe](https://img.shields.io/badge/TryHackMe-OwlRC-red?style=flat-square&logo=tryhackme&logoColor=white)](https://tryhackme.com/p/OwlRC)
-![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-17-39d353?style=flat-square)
+![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-18-39d353?style=flat-square)
 ![THM Total](https://img.shields.io/badge/THM_Total_Rooms-800-58a6ff?style=flat-square)
 ![Auto Updated](https://img.shields.io/badge/Auto_Updated-Daily-c9a84c?style=flat-square)
 
@@ -32,15 +32,15 @@ Every writeup follows this structure:
 
 ---
 
-## 🟢 Easy  —  13 writeups
+## 🟢 Easy  —  14 writeups
 
 | Room | Room | Room |
 |---|---|---|
 | [Ad Authenticated Enumeration](easy/ad-authenticated-enumeration.md) | [Ad Basic Enumeration](easy/ad-basic-enumeration.md) | [Agent T](easy/agent-t.md) |
 | [Basic Pentesting](easy/basic-pentesting.md) | [Checkmate](easy/checkmate.md) | [Compiled](easy/compiled.md) |
 | [Confidential](easy/confidential.md) | [Corridor](easy/corridor.md) | [Cyberheroes](easy/cyberheroes.md) |
-| [Digdug](easy/digdug.md) | [Neighbour](easy/neighbour.md) | [Nmap Intermediate](easy/nmap-intermediate.md) |
-| [Nmap The Basics](easy/nmap-the-basics.md) |
+| [Digdug](easy/digdug.md) | [Neighbour](easy/neighbour.md) | [Netsec Challenge](easy/netsec-challenge.md) |
+| [Nmap Intermediate](easy/nmap-intermediate.md) | [Nmap The Basics](easy/nmap-the-basics.md) |
 
 
 ---
