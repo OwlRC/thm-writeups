@@ -3,15 +3,15 @@
 │  OwlRC // TryHackMe Writeups                 by OwlRC 🦉   │
 │  Last updated: 2026-08-30 04:02 UTC                        │
 ├─────────────────────────────────────────────────────────────┤
-│  Completed : 26    🟢 Easy: 16   🟡 Medium: 8    🔴 Hard: 2    │
+│  Completed : 29    🟢 Easy: 18   🟡 Medium: 9    🔴 Hard: 2    │
 │  THM Total : 800 rooms (live count from TryHackMe)           │
 ├─────────────────────────────────────────────────────────────┤
-│  Progress  : ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  3.2%  (26/800) │
+│  Progress  : █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  3.6%  (29/800) │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 [![TryHackMe](https://img.shields.io/badge/TryHackMe-OwlRC-red?style=flat-square&logo=tryhackme&logoColor=white)](https://tryhackme.com/p/OwlRC)
-![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-26-39d353?style=flat-square)
+![Rooms Completed](https://img.shields.io/badge/Rooms_Completed-29-39d353?style=flat-square)
 ![THM Total](https://img.shields.io/badge/THM_Total_Rooms-800-58a6ff?style=flat-square)
 ![Auto Updated](https://img.shields.io/badge/Auto_Updated-Daily-c9a84c?style=flat-square)
 
@@ -32,27 +32,27 @@ Every writeup follows this structure:
 
 ---
 
-## 🟢 Easy  —  16 writeups
+## 🟢 Easy  —  18 writeups
 
 | Room | Room | Room |
 |---|---|---|
 | [Ad Authenticated Enumeration](easy/ad-authenticated-enumeration.md) | [Ad Basic Enumeration](easy/ad-basic-enumeration.md) | [Agent T](easy/agent-t.md) |
 | [Basic Pentesting](easy/basic-pentesting.md) | [Checkmate](easy/checkmate.md) | [Compiled](easy/compiled.md) |
 | [Confidential](easy/confidential.md) | [Corridor](easy/corridor.md) | [Cyberheroes](easy/cyberheroes.md) |
-| [Digdug](easy/digdug.md) | [Neighbour](easy/neighbour.md) | [Netsec Challenge](easy/netsec-challenge.md) |
-| [Nmap Intermediate](easy/nmap-intermediate.md) | [Nmap The Basics](easy/nmap-the-basics.md) | [Pickle Rick](easy/pickle-rick.md) |
-| [W1Seguy](easy/w1seguy.md) |
+| [Digdug](easy/digdug.md) | [Md2Pdf](easy/md2pdf.md) | [Neighbour](easy/neighbour.md) |
+| [Netsec Challenge](easy/netsec-challenge.md) | [Nmap Intermediate](easy/nmap-intermediate.md) | [Nmap The Basics](easy/nmap-the-basics.md) |
+| [Pickle Rick](easy/pickle-rick.md) | [Takeover](easy/takeover.md) | [W1Seguy](easy/w1seguy.md) |
 
 
 ---
 
-## 🟡 Medium  —  8 writeups
+## 🟡 Medium  —  9 writeups
 
 | Room | Room | Room |
 |---|---|---|
 | [Ad Badsuccessor](medium/ad-badsuccessor.md) | [Ai Rooms](medium/ai-rooms.md) | [Hammer](medium/hammer.md) |
 | [Lookback](medium/lookback.md) | [Mr Robot](medium/mr-robot.md) | [Osint Rooms](medium/osint-rooms.md) |
-| [Support](medium/support.md) | [Unindexed Challenge](medium/unindexed-challenge.md) |
+| [Support](medium/support.md) | [Unindexed Challenge](medium/unindexed-challenge.md) | [Water Bottle](medium/water-bottle.md) |
 
 
 ---
